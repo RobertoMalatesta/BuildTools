@@ -1,0 +1,30 @@
+phases:
+- phase: Windows
+  queue:
+    demands: agent.os -equals Windows_NT
+  steps:
+  - script: .\build.cmd
+    displayName: Windows Build
+
+- phase: OSX
+  queue:
+    demands: agent.os -equals Darwin
+  steps:
+  - script: .\build.sh
+
+- phase: Linux
+  queue:
+    demands: agent.os -equals Linux
+  steps:
+  - script: .\build.sh
+
+- phase: Publish
+  queue:
+    demands: agent.os -equals Windows_NT
+  dependsOn:
+  - Windows
+  - OSX
+  - Linux
+  condition: succeeded()
+  steps:
+  - script: .\upload.cmd
